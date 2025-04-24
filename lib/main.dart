@@ -5,6 +5,7 @@ import 'splash/screens/splash_screen.dart';
 import 'onboarding/screens/onboarding_screen.dart';
 import 'auth/screens/login_screen.dart';
 import 'auth/screens/register_screen.dart';
+import 'config/routes/app_routes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,12 +32,9 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.backgroundColor,
       ),
       initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-      },
+      routes: AppRoutes.routes,
+      onGenerateRoute: AppRoutes.generateRoute,
+      onUnknownRoute: AppRoutes.unknownRoute,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/vector_header.dart';
+import '../../config/routes/app_routes.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -62,6 +63,8 @@ class LoginScreen extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () {
                               // TODO: Implémenter la connexion
+                              // Redirection vers l'écran d'accueil
+                              Navigator.pushReplacementNamed(context, AppRoutes.home);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryColor,
@@ -94,7 +97,7 @@ class LoginScreen extends StatelessWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.pushReplacementNamed(context, '/register');
+                                  Navigator.pushReplacementNamed(context, AppRoutes.register);
                                 },
                                 child: const Text(
                                   'S\'inscrire',

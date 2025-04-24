@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_colors.dart';
-import 'splash/screens/splash_screen.dart';
-import 'onboarding/screens/onboarding_screen.dart';
-import 'auth/screens/login_screen.dart';
-import 'auth/screens/register_screen.dart';
-import 'offers/screens/offer_list_screen.dart';
-import 'offers/providers/offer_provider.dart';
+import 'providers/offer_provider.dart';
+import 'config/routes/app_routes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,17 +33,12 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           scaffoldBackgroundColor: AppColors.backgroundColor,
         ),
-        initialRoute: '/offers',
-        routes: {
-          '/': (context) => const SplashScreen(),
-          '/onboarding': (context) => const OnboardingScreen(),
-          '/login': (context) => const LoginScreen(),
-          '/register': (context) => const RegisterScreen(),
-          '/offers': (context) => const OfferListScreen(),
-        },
-        navigatorObservers: [
-          RouteObserver<PageRoute>(),
-        ],
+
+        initialRoute: '/',
+        routes: AppRoutes.routes,
+        onGenerateRoute: AppRoutes.generateRoute,
+        onUnknownRoute: AppRoutes.unknownRoute,
+
       ),
     );
   }

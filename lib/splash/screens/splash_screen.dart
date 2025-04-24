@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../config/routes/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -37,6 +38,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     // Démarrer l'animation
     _controller.forward();
+
+    // Ajouter la navigation vers l'onboarding après 3 secondes
+    _navigateToOnboarding();
+  }
+
+  void _navigateToOnboarding() {
+    Future.delayed(const Duration(seconds: 3), () {
+      // S'assurer que le widget est toujours monté avant de naviguer
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+      }
+    });
   }
 
   @override

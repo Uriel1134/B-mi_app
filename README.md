@@ -108,10 +108,6 @@ git reset HEAD~1
 
 ## Contacts
 
-En cas de problème technique :
-- [Votre email]
-- [Votre numéro de téléphone]
-
 ## Ressources Utiles
 
 - Documentation Flutter : https://flutter.dev/docs

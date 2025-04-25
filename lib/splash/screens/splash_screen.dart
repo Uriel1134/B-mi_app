@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../config/routes/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -24,23 +25,30 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.0, 0.5, curve: Curves.easeIn),
+        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
       ),
     );
 
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.0, 0.5, curve: Curves.easeOut),
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
       ),
     );
 
     // Démarrer l'animation
     _controller.forward();
 
-    // Navigation vers l'écran d'onboarding après 3 secondes
+    // Ajouter la navigation vers l'onboarding après 3 secondes
+    _navigateToOnboarding();
+  }
+
+  void _navigateToOnboarding() {
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/onboarding');
+      // S'assurer que le widget est toujours monté avant de naviguer
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+      }
     });
   }
 
@@ -72,9 +80,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   ),
                 ),
                 
-                
                 // Slogan
-                Text(
+                const Text(
                   'Gagne avec tes',
                   style: TextStyle(
                     fontSize: 28,
@@ -83,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                const Text(
                   'gestes écolos !',
                   style: TextStyle(
                     fontSize: 28,

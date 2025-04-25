@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'core/theme/app_colors.dart';
-import 'splash/screens/splash_screen.dart';
-import 'onboarding/screens/onboarding_screen.dart';
-import 'auth/screens/login_screen.dart';
-import 'auth/screens/register_screen.dart';
+import 'providers/offer_provider.dart';
 import 'config/routes/app_routes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
+    const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ),
@@ -23,18 +21,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bèmi',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
-        useMaterial3: true,
-        scaffoldBackgroundColor: AppColors.backgroundColor,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => OfferProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Bèmi',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+          useMaterial3: true,
+          scaffoldBackgroundColor: AppColors.backgroundColor,
+        ),
+
+        initialRoute: '/',
+        routes: AppRoutes.routes,
+        onGenerateRoute: AppRoutes.generateRoute,
+        onUnknownRoute: AppRoutes.unknownRoute,
+
       ),
-      initialRoute: '/',
-      routes: AppRoutes.routes,
-      onGenerateRoute: AppRoutes.generateRoute,
-      onUnknownRoute: AppRoutes.unknownRoute,
     );
   }
 }

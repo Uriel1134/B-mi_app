@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/routes/app_routes.dart';
+import '../core/theme/app_colors.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,12 +12,12 @@ class HomeScreen extends StatelessWidget {
     final bool isSmallScreen = screenSize.width < 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.all(isSmallScreen ? 12.0 : 16.0),
           decoration: BoxDecoration(
-            color: const Color(0xFFECF5EC),
+            color: AppColors.backgroundColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -38,46 +39,48 @@ class HomeScreen extends StatelessWidget {
 
                   // Solde Kwetché
                   Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isSmallScreen ? 12 : 16,
-                      vertical: isSmallScreen ? 6 : 8,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4CAF50),
-                      borderRadius: BorderRadius.circular(20),
+                      color: const Color(0xFF2F9359),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
                       children: [
-                        Text(
-                          '2500',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: isSmallScreen ? 14 : 16,
-                          ),
-                        ),
-                        SizedBox(width: isSmallScreen ? 6 : 8),
-                        Text(
-                          'Kwetché',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: isSmallScreen ? 14 : 16,
-                          ),
-                        ),
-                        SizedBox(width: isSmallScreen ? 3 : 4),
                         Container(
-                          width: 20,
-                          height: 20,
-                          decoration: const BoxDecoration(
-                            color: Colors.yellow,
-                            shape: BoxShape.circle,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
                           ),
-                          child: const Icon(
-                            Icons.monetization_on,
-                            color: Colors.amber,
-                            size: 16,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF9BD1B8),
+                            borderRadius: BorderRadius.circular(6),
                           ),
+                          child: Text(
+                            '2500',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'Kwètché',
+                          style: TextStyle(
+                            color: AppColors.JauneColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
+                          ),
+                        ),
+                        SizedBox(width: 3),
+                        Image.asset(
+                          'assets/images/Coins.png',
+                          width: 34,
+                          height: 34,
                         ),
                       ],
                     ),
@@ -85,15 +88,17 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: isSmallScreen ? 16 : 24),
+              const SizedBox(height: 60),
 
               // Message de bienvenue
               RichText(
                 text: TextSpan(
                   style: TextStyle(
-                    fontSize: isSmallScreen ? 20 : 24,
                     color: Colors.black,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 31,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w700,
+                    height: 1.20,
                   ),
                   children: const [
                     TextSpan(text: 'Bienvenue,\n'),
@@ -102,23 +107,40 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: isSmallScreen ? 16 : 24),
+              const SizedBox(height: 25),
 
               // Défi quotidien
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  // Texte "Défi quotidien"
+                  const Text(
                     'Défi quotidien',
                     style: TextStyle(
-                      fontSize: isSmallScreen ? 16 : 18,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w700,
+                      height: 1.20,
                     ),
                   ),
-                  SizedBox(height: isSmallScreen ? 6 : 8),
-                  Text(
+                  // Ajouter un espace et la ligne en dessous
+                  const SizedBox(height: 4), // Ajuster la hauteur si besoin
+                  Container(
+                    height: 3, 
+                    width: 60, // Ajuster la largeur si besoin
+                    color: const Color(0xFFFFA726), // Orange
+                  ),
+                  const SizedBox(height: 12), // Espace avant le texte du défi
+                  const Text(
                     'Collecter 2000 déchet plastique',
-                    style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w400,
+                      height: 1.20,
+                    ),
                   ),
                 ],
               ),
@@ -136,32 +158,32 @@ class HomeScreen extends StatelessWidget {
                     _buildActionCard(
                       context,
                       'COLLECTER\n& TRIER',
-                      'assets/images/collecter.png',
-                      Colors.blue,
+                      'assets/images/collecter.png', // Chemin vers l'image de collecte
+                      const Color(0xFF3F51B5),
                       () => Navigator.pushNamed(context, AppRoutes.collecte),
                       isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
                       'TROUVER UN\nDÉPOT',
-                      'assets/images/depot.png',
-                      Colors.orange,
+                      'assets/images/depot.png', // Chemin vers l'image de dépôt
+                      const Color(0xFFEA9538),
                       () => Navigator.pushNamed(context, AppRoutes.depots),
                       isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
                       'SCANNE QR',
-                      'assets/images/qr_code.png',
-                      Colors.cyan,
+                      'assets/images/qr_code.png', // Chemin vers l'image de QR code
+                      const Color(0xFF00A9CC),
                       () => Navigator.pushNamed(context, AppRoutes.scanQR),
                       isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
                       'LES OFFRES',
-                      'assets/images/offres.png',
-                      Colors.purple,
+                      'assets/images/offres.png', // Chemin vers l'image des offres
+                      const Color(0xFF2F9359),
                       () => Navigator.pushNamed(context, AppRoutes.offres),
                       isSmallScreen,
                     ),
@@ -193,25 +215,31 @@ class HomeScreen extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Image plus grande
-              Image.asset(
-                imagePath,
-                height: isSmallScreen ? 60 : 70,
-                width: isSmallScreen ? 60 : 70,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    _getIconForMissingImage(title),
-                    size: isSmallScreen ? 40 : 50,
-                    color: color,
-                  );
-                },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Image au lieu d'icône
+            Image.asset(
+              imagePath,
+              height: 90,
+              width: 90,
+              // Si vous n'avez pas encore les images, utilisez ce placeholder
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(
+                  _getIconForMissingImage(title),
+                  size: 40,
+                  color: color,
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: color,
               ),
               SizedBox(height: isSmallScreen ? 8 : 12),
               Text(

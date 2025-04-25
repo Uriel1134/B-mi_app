@@ -7,6 +7,7 @@ import '../../onboarding/screens/onboarding_screen.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../auth/screens/register_screen.dart';
 import '../../screens/offer_list_screen.dart';
+import '../../screens/scan_qr_screen.dart';
 
 class AppRoutes {
   // Définition des noms de routes
@@ -29,11 +30,10 @@ class AppRoutes {
     register: (context) => const RegisterScreen(),
     home: (context) => const HomeScreen(),
     collecte: (context) => const CollecteScreen(),
-    // Ajoutez l'écran des offres ici
     offres: (context) => const OfferListScreen(),
+    scanQR: (context) => const ScanQrScreen(),
     // Ajoutez vos autres routes ici au fur et à mesure
     // depots: (context) => const DepotsScreen(),
-    // scanQR: (context) => const ScanQRScreen(),
     // profile: (context) => const ProfileScreen(),
   };
 

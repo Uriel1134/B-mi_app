@@ -6,11 +6,15 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Récupération des dimensions de l'écran
+    final Size screenSize = MediaQuery.of(context).size;
+    final bool isSmallScreen = screenSize.width < 600;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(isSmallScreen ? 12.0 : 16.0),
           decoration: BoxDecoration(
             color: const Color(0xFFECF5EC),
             borderRadius: BorderRadius.circular(20),
@@ -24,49 +28,56 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   // Avatar profil - Cliquable pour aller au profil
                   GestureDetector(
-                    onTap:
-                        () => Navigator.pushNamed(context, AppRoutes.profile),
-                    child: const CircleAvatar(
-                      radius: 24,
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                    child: CircleAvatar(
+                      radius: isSmallScreen ? 20 : 24,
                       backgroundColor: Colors.blue,
-                      child: Icon(Icons.person, color: Colors.white, size: 30),
+                      child: Icon(Icons.person, color: Colors.white, size: isSmallScreen ? 24 : 30),
                     ),
                   ),
 
                   // Solde Kwetché
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isSmallScreen ? 12 : 16,
+                      vertical: isSmallScreen ? 6 : 8,
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF4CAF50),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
-                      children: const [
+                      children: [
                         Text(
                           '2500',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: isSmallScreen ? 14 : 16,
                           ),
                         ),
-                        SizedBox(width: 8),
+                        SizedBox(width: isSmallScreen ? 6 : 8),
                         Text(
                           'Kwetché',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: isSmallScreen ? 14 : 16,
                           ),
                         ),
-                        SizedBox(width: 4),
-                        Icon(
-                          Icons.monetization_on,
-                          color: Colors.yellow,
-                          size: 20,
+                        SizedBox(width: isSmallScreen ? 3 : 4),
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: const BoxDecoration(
+                            color: Colors.yellow,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.monetization_on,
+                            color: Colors.amber,
+                            size: 16,
+                          ),
                         ),
                       ],
                     ),
@@ -74,88 +85,85 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: isSmallScreen ? 16 : 24),
 
               // Message de bienvenue
               RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: isSmallScreen ? 20 : 24,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
-                  children: [
+                  children: const [
                     TextSpan(text: 'Bienvenue,\n'),
                     TextSpan(text: 'Koffi !'),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: isSmallScreen ? 16 : 24),
 
               // Défi quotidien
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: const [
-                      Text(
-                        'Défi quotidien',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Divider(color: Color(0xFFFF9800), thickness: 2),
-                      ),
-                    ],
+                  Text(
+                    'Défi quotidien',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 16 : 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: isSmallScreen ? 6 : 8),
+                  Text(
                     'Collecter 2000 déchet plastique',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: isSmallScreen ? 24 : 32),
 
               // Grille des actions avec images au lieu d'icônes
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
+                  mainAxisSpacing: isSmallScreen ? 16 : 20,
+                  crossAxisSpacing: isSmallScreen ? 16 : 20,
+                  childAspectRatio: 1.0,
                   children: [
                     _buildActionCard(
                       context,
                       'COLLECTER\n& TRIER',
-                      'assets/images/collecter.png', // Chemin vers l'image de collecte
+                      'assets/images/collecter.png',
                       Colors.blue,
                       () => Navigator.pushNamed(context, AppRoutes.collecte),
+                      isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
                       'TROUVER UN\nDÉPOT',
-                      'assets/images/depot.png', // Chemin vers l'image de dépôt
+                      'assets/images/depot.png',
                       Colors.orange,
                       () => Navigator.pushNamed(context, AppRoutes.depots),
+                      isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
                       'SCANNE QR',
-                      'assets/images/qr_code.png', // Chemin vers l'image de QR code
+                      'assets/images/qr_code.png',
                       Colors.cyan,
                       () => Navigator.pushNamed(context, AppRoutes.scanQR),
+                      isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
                       'LES OFFRES',
-                      'assets/images/offres.png', // Chemin vers l'image des offres
+                      'assets/images/offres.png',
                       Colors.purple,
                       () => Navigator.pushNamed(context, AppRoutes.offres),
+                      isSmallScreen,
                     ),
                   ],
                 ),
@@ -167,13 +175,14 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Méthode modifiée pour utiliser des images au lieu d'icônes
+  // Méthode modifiée pour utiliser des images plus grandes
   Widget _buildActionCard(
     BuildContext context,
     String title,
     String imagePath,
     Color color,
     VoidCallback onPressed,
+    bool isSmallScreen,
   ) {
     return Card(
       elevation: 2,
@@ -184,34 +193,38 @@ class HomeScreen extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Image au lieu d'icône
-            Image.asset(
-              imagePath,
-              height: 48,
-              width: 48,
-              // Si vous n'avez pas encore les images, utilisez ce placeholder
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(
-                  _getIconForMissingImage(title),
-                  size: 40,
-                  color: color,
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: color,
+        child: Padding(
+          padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Image plus grande
+              Image.asset(
+                imagePath,
+                height: isSmallScreen ? 60 : 70,
+                width: isSmallScreen ? 60 : 70,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    _getIconForMissingImage(title),
+                    size: isSmallScreen ? 40 : 50,
+                    color: color,
+                  );
+                },
               ),
-            ),
-          ],
+              SizedBox(height: isSmallScreen ? 8 : 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: isSmallScreen ? 12 : 14,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

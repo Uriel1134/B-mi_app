@@ -1,0 +1,2 @@
+/home/oloukpede/Flutter_Projet/B-mi_app/android/app/.cxx/RelWithDebInfo/q345q1ku/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/oloukpede/Flutter_Projet/B-mi_app/android/app/.cxx/RelWithDebInfo/q345q1ku/arm64-v8a/CMakeFiles/rebuild_cache.dir

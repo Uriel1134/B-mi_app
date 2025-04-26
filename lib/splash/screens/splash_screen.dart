@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../config/routes/app_routes.dart';
+import '../../services/token_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -39,17 +40,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Démarrer l'animation
     _controller.forward();
 
-    // Ajouter la navigation vers l'onboarding après 3 secondes
-    _navigateToOnboarding();
+    // Rediriger après l'animation selon le token
+    _navigateAfterSplash();
   }
 
-  void _navigateToOnboarding() {
-    Future.delayed(const Duration(seconds: 3), () {
-      // S'assurer que le widget est toujours monté avant de naviguer
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
-      }
-    });
+  void _navigateAfterSplash() async {
+    await Future.delayed(const Duration(seconds: 3));
+    final isLoggedIn = await TokenService.hasToken();
+    if (!mounted) return;
+    if (isLoggedIn) {
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    }
   }
 
   @override

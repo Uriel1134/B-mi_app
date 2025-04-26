@@ -14,6 +14,7 @@ import '../../screens/scan_qr_screen.dart';
 import '../../screens/profile_screen.dart';
 import '../../services/token_service.dart';
 
+
 class AppRoutes {
   // Définition des noms de routes
   static const String splash = '/';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String scanQR = '/scan-qr';
   static const String offres = '/offres';
   static const String profile = '/profile';
+  
 
   // Map de toutes les routes disponibles
   static Map<String, WidgetBuilder> get routes => {

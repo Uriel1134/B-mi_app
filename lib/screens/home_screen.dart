@@ -199,64 +199,54 @@ class HomeScreen extends StatelessWidget {
 
   // Méthode modifiée pour utiliser des images plus grandes
   Widget _buildActionCard(
-    BuildContext context,
-    String title,
-    String imagePath,
-    Color color,
-    VoidCallback onPressed,
-    bool isSmallScreen,
-  ) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: color, width: 2),
-      ),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Image au lieu d'icône
-            Image.asset(
-              imagePath,
-              height: 90,
-              width: 90,
-              // Si vous n'avez pas encore les images, utilisez ce placeholder
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(
-                  _getIconForMissingImage(title),
-                  size: 40,
-                  color: color,
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+  BuildContext context,
+  String title,
+  String imagePath,
+  Color color,
+  VoidCallback onPressed,
+  bool isSmallScreen,
+) {
+  return Card(
+    elevation: 2,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(color: color, width: 2),
+    ),
+    child: InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Image au lieu d'icône
+          Image.asset(
+            imagePath,
+            height: 90,
+            width: 90,
+            // Si vous n'avez pas encore les images, utilisez ce placeholder
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                _getIconForMissingImage(title),
+                size: 40,
                 color: color,
-              ),
-              SizedBox(height: isSmallScreen ? 8 : 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: isSmallScreen ? 12 : 14,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-            ],
+              );
+            },
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 12 : 14,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   // Méthode auxiliaire pour fournir des icônes de secours si les images ne sont pas trouvées
   IconData _getIconForMissingImage(String title) {

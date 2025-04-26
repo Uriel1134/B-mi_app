@@ -1,9 +1,36 @@
 import 'package:flutter/material.dart';
 import '../config/routes/app_routes.dart';
 import '../core/theme/app_colors.dart';
+import '../services/auth_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String userName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final userData = await AuthService.getUserData();
+      if (mounted) {
+        setState(() {
+          userName = userData['name'] ?? 'Utilisateur';
+        });
+      }
+    } catch (e) {
+      print('Erreur lors du chargement des données utilisateur: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +52,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   // Avatar profil - Cliquable pour aller au profil
                   GestureDetector(
-                    onTap:
-                        () => Navigator.pushNamed(context, AppRoutes.profile),
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
                     child: const CircleAvatar(
                       radius: 24,
                       backgroundColor: Colors.blue,
@@ -55,7 +81,7 @@ class HomeScreen extends StatelessWidget {
                             color: const Color(0xFF9BD1B8),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: Text(
+                          child: const Text(
                             '2500',
                             style: TextStyle(
                               color: Colors.white,
@@ -64,8 +90,8 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(width: 4),
-                        Text(
+                        const SizedBox(width: 4),
+                        const Text(
                           'Kwètché',
                           style: TextStyle(
                             color: AppColors.JauneColor,
@@ -73,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                             fontSize: 20,
                           ),
                         ),
-                        SizedBox(width: 3),
+                        const SizedBox(width: 3),
                         Image.asset(
                           'assets/images/Coins.png',
                           width: 34,
@@ -89,8 +115,8 @@ class HomeScreen extends StatelessWidget {
 
               // Message de bienvenue
               RichText(
-                text: const TextSpan(
-                  style: TextStyle(
+                text: TextSpan(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 31,
                     fontFamily: 'Roboto',
@@ -98,8 +124,8 @@ class HomeScreen extends StatelessWidget {
                     height: 1.20,
                   ),
                   children: [
-                    TextSpan(text: 'Bienvenue,\n'),
-                    TextSpan(text: 'Koffi !'),
+                    const TextSpan(text: 'Bienvenue,\n'),
+                    TextSpan(text: '$userName !'),
                   ],
                 ),
               ),

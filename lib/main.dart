@@ -4,8 +4,9 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_colors.dart';
 import 'providers/offer_provider.dart';
 import 'config/routes/app_routes.dart';
+import 'services/token_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -13,11 +14,17 @@ void main() {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
-  runApp(const MyApp());
+
+  // Vérifier si l'utilisateur est connecté
+  final isLoggedIn = await TokenService.hasToken();
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +40,10 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           scaffoldBackgroundColor: AppColors.backgroundColor,
         ),
-
-        initialRoute: '/',
+        initialRoute: isLoggedIn ? AppRoutes.home : AppRoutes.login,
         routes: AppRoutes.routes,
         onGenerateRoute: AppRoutes.generateRoute,
         onUnknownRoute: AppRoutes.unknownRoute,
-
       ),
     );
   }

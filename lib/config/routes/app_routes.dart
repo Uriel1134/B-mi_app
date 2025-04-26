@@ -8,6 +8,8 @@ import '../../auth/screens/login_screen.dart';
 import '../../auth/screens/register_screen.dart';
 import '../../screens/offer_list_screen.dart';
 import '../../screens/scan_qr_screen.dart';
+import '../../screens/profile_screen.dart';
+import '../../services/token_service.dart';
 
 class AppRoutes {
   // Définition des noms de routes
@@ -32,6 +34,7 @@ class AppRoutes {
     collecte: (context) => const CollecteScreen(),
     offres: (context) => const OfferListScreen(),
     scanQR: (context) => const ScanQrScreen(),
+    profile: (context) => const ProfileScreen(),
     // Ajoutez vos autres routes ici au fur et à mesure
     // depots: (context) => const DepotsScreen(),
     // profile: (context) => const ProfileScreen(),
@@ -66,5 +69,14 @@ class AppRoutes {
         body: const Center(child: Text('La page demandée n\'existe pas.')),
       ),
     );
+  }
+
+  // Méthode pour se déconnecter
+  static Future<void> logout(BuildContext context) async {
+    await TokenService.deleteToken();
+    if (context.mounted) {
+      // Assurez-vous d'importer TokenService
+      Navigator.pushReplacementNamed(context, login);
+    }
   }
 }

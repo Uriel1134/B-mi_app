@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import '../../screens/home_screen.dart';
 import '../../screens/collecte_screen.dart';
+import '../../screens/photo_capture_screen.dart';
+import '../../screens/categorisation_screen.dart';
+import '../../screens/depot_screen.dart';
 import '../../splash/screens/splash_screen.dart';
 import '../../onboarding/screens/onboarding_screen.dart';
 import '../../auth/screens/login_screen.dart';
@@ -17,6 +20,8 @@ class AppRoutes {
   static const String register = '/register';
   static const String home = '/home';
   static const String collecte = '/collecte';
+  static const String photoCapture = '/photo-capture';
+  static const String categorisation = '/categorisation';
   static const String depots = '/depots';
   static const String scanQR = '/scan-qr';
   static const String offres = '/offres';
@@ -30,10 +35,13 @@ class AppRoutes {
     register: (context) => const RegisterScreen(),
     home: (context) => const HomeScreen(),
     collecte: (context) => const CollecteScreen(),
+    photoCapture: (context) => const PhotoCaptureScreen(),
+    categorisation: (context) => const CategorisationScreen(),
+    depots: (context) => const DepotScreen(),
+
     offres: (context) => const OfferListScreen(),
     scanQR: (context) => const ScanQrScreen(),
-    // Ajoutez vos autres routes ici au fur et à mesure
-    // depots: (context) => const DepotsScreen(),
+
     // profile: (context) => const ProfileScreen(),
   };
 

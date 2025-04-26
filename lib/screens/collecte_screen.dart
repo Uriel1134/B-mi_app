@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+import 'photo_capture_screen.dart';
 
 class CollecteScreen extends StatelessWidget {
   const CollecteScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Récupération des dimensions de l'écran
+    final Size screenSize = MediaQuery.of(context).size;
+    final bool isSmallScreen = screenSize.width < 600;
+    
     return Scaffold(
       backgroundColor: const Color(0xFFECF5EC),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const CircleAvatar(
+            backgroundColor: Colors.black,
+            radius: 15,
+            child: Icon(Icons.arrow_back, color: Colors.white, size: 18),
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -19,121 +28,104 @@ class CollecteScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Image d'illustration
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  'assets/images/collecte_illustration.png',
-                  height: 220,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  // Fallback en cas d'image manquante
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 220,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFB3E5FC),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.image, size: 80, color: Colors.white),
-                      ),
-                    );
-                  },
-                ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Image d'illustration
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/images/collecte_illustration.png',
+                height: screenSize.height * 0.3,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: screenSize.height * 0.3,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFB3E5FC),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.image, size: 60, color: Colors.white),
+                    ),
+                  );
+                },
               ),
-
-              const SizedBox(height: 30),
-
-              // Texte explicatif
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
-                  children: [
-                    const TextSpan(
-                      text:
-                          'Prêt à contribuer à un environnement propre ? Cliquer sur ',
-                    ),
-                    TextSpan(
-                      text: 'le bouton en dessous',
-                      style: const TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const TextSpan(text: ' pour prendre une photo de votre '),
-                    const TextSpan(
-                      text: 'EcoGeste',
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Bouton pour prendre une photo
-              SizedBox(
-                width: 200,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Fonction pour prendre une photo
-                    _takePicture(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    'Prendre une photo',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          // Texte explicatif
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: TextStyle(fontSize: isSmallScreen ? 14 : 16, color: Colors.black),
+                children: [
+                  const TextSpan(
+                    text: 'Prêt à contribuer à un environnement propre ? Cliquer sur ',
+                  ),
+                  TextSpan(
+                    text: 'le bouton en dessous',
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                  const TextSpan(text: ' pour prendre une photo de votre '),
+                  TextSpan(
+                    text: 'EcoGeste',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                      fontSize: isSmallScreen ? 14 : 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Spacer pour pousser le bouton vers le bas
+          const Spacer(),
+
+          // Bouton pour prendre une photo
+          Padding(
+            padding: const EdgeInsets.only(bottom: 40.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Naviguer vers l'écran de capture photo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PhotoCaptureScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: isSmallScreen ? 24 : 32,
+                  vertical: isSmallScreen ? 10 : 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+              child: const Text(
+                'Prendre une photo',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
-  }
-
-  // Méthode pour gérer la prise de photo
-  void _takePicture(BuildContext context) {
-    // Ici, vous pouvez implémenter la logique pour prendre une photo
-    // Pour l'instant, affichons simplement une boîte de dialogue
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Fonctionnalité à venir'),
-            content: const Text(
-              'La fonctionnalité de prise de photo sera implémentée lorsque vous connecterez le frontend au backend.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-    );
-
-    // Note: Pour implémenter réellement cette fonctionnalité, vous aurez besoin du package camera:
-    // https://pub.dev/packages/camera
-    // Ou image_picker: https://pub.dev/packages/image_picker
   }
 }

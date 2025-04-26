@@ -1,0 +1,1 @@
+/home/oloukpede/Flutter_Projet/B-mi_app/build/app/intermediates/cxx/RelWithDebInfo/q345q1ku/obj/x86

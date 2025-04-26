@@ -7,11 +7,15 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Récupération des dimensions de l'écran
+    final Size screenSize = MediaQuery.of(context).size;
+    final bool isSmallScreen = screenSize.width < 600;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(isSmallScreen ? 12.0 : 16.0),
           decoration: BoxDecoration(
             color: AppColors.backgroundColor,
             borderRadius: BorderRadius.circular(20),
@@ -25,12 +29,11 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   // Avatar profil - Cliquable pour aller au profil
                   GestureDetector(
-                    onTap:
-                        () => Navigator.pushNamed(context, AppRoutes.profile),
-                    child: const CircleAvatar(
-                      radius: 24,
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                    child: CircleAvatar(
+                      radius: isSmallScreen ? 20 : 24,
                       backgroundColor: Colors.blue,
-                      child: Icon(Icons.person, color: Colors.white, size: 30),
+                      child: Icon(Icons.person, color: Colors.white, size: isSmallScreen ? 24 : 30),
                     ),
                   ),
 
@@ -89,7 +92,7 @@ class HomeScreen extends StatelessWidget {
 
               // Message de bienvenue
               RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 31,
@@ -97,7 +100,7 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     height: 1.20,
                   ),
-                  children: [
+                  children: const [
                     TextSpan(text: 'Bienvenue,\n'),
                     TextSpan(text: 'Koffi !'),
                   ],
@@ -142,14 +145,15 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: isSmallScreen ? 24 : 32),
 
               // Grille des actions avec images au lieu d'icônes
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
+                  mainAxisSpacing: isSmallScreen ? 16 : 20,
+                  crossAxisSpacing: isSmallScreen ? 16 : 20,
+                  childAspectRatio: 1.0,
                   children: [
                     _buildActionCard(
                       context,
@@ -157,6 +161,7 @@ class HomeScreen extends StatelessWidget {
                       'assets/images/collecter.png', // Chemin vers l'image de collecte
                       const Color(0xFF3F51B5),
                       () => Navigator.pushNamed(context, AppRoutes.collecte),
+                      isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
@@ -164,6 +169,7 @@ class HomeScreen extends StatelessWidget {
                       'assets/images/depot.png', // Chemin vers l'image de dépôt
                       const Color(0xFFEA9538),
                       () => Navigator.pushNamed(context, AppRoutes.depots),
+                      isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
@@ -171,6 +177,7 @@ class HomeScreen extends StatelessWidget {
                       'assets/images/qr_code.png', // Chemin vers l'image de QR code
                       const Color(0xFF00A9CC),
                       () => Navigator.pushNamed(context, AppRoutes.scanQR),
+                      isSmallScreen,
                     ),
                     _buildActionCard(
                       context,
@@ -178,6 +185,7 @@ class HomeScreen extends StatelessWidget {
                       'assets/images/offres.png', // Chemin vers l'image des offres
                       const Color(0xFF2F9359),
                       () => Navigator.pushNamed(context, AppRoutes.offres),
+                      isSmallScreen,
                     ),
                   ],
                 ),
@@ -189,55 +197,56 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Méthode modifiée pour utiliser des images au lieu d'icônes
+  // Méthode modifiée pour utiliser des images plus grandes
   Widget _buildActionCard(
-    BuildContext context,
-    String title,
-    String imagePath,
-    Color color,
-    VoidCallback onPressed,
-  ) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: color, width: 2),
-      ),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Image au lieu d'icône
-            Image.asset(
-              imagePath,
-              height: 90,
-              width: 90,
-              // Si vous n'avez pas encore les images, utilisez ce placeholder
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(
-                  _getIconForMissingImage(title),
-                  size: 40,
-                  color: color,
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+  BuildContext context,
+  String title,
+  String imagePath,
+  Color color,
+  VoidCallback onPressed,
+  bool isSmallScreen,
+) {
+  return Card(
+    elevation: 2,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(color: color, width: 2),
+    ),
+    child: InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Image au lieu d'icône
+          Image.asset(
+            imagePath,
+            height: 90,
+            width: 90,
+            // Si vous n'avez pas encore les images, utilisez ce placeholder
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                _getIconForMissingImage(title),
+                size: 40,
                 color: color,
-              ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 12 : 14,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   // Méthode auxiliaire pour fournir des icônes de secours si les images ne sont pas trouvées
   IconData _getIconForMissingImage(String title) {

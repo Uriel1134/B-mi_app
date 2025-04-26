@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           scaffoldBackgroundColor: AppColors.backgroundColor,
         ),
-        initialRoute: isLoggedIn ? AppRoutes.home : AppRoutes.login,
+        initialRoute: AppRoutes.splash,
         routes: AppRoutes.routes,
         onGenerateRoute: AppRoutes.generateRoute,
         onUnknownRoute: AppRoutes.unknownRoute,

@@ -3,6 +3,7 @@ import '../../core/theme/app_colors.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/vector_header.dart';
 import '../../widgets/city_selector.dart';
+import '../../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -17,8 +18,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _phoneController = TextEditingController();
   String? _selectedCity;
   String? _selectedDepartment;
+  bool _isLoading = false;
+  final AuthService _authService = AuthService();
 
   @override
   void dispose() {
@@ -26,19 +30,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
-  void _handleRegistration() {
+  Future<void> _handleRegistration() async {
     if (_selectedCity == null) {
       setState(() {}); // Force l'affichage du message d'erreur de la ville
+      return;
     }
+
     if ((_formKey.currentState?.validate() ?? false) && _selectedCity != null) {
-      // TODO: Implémenter l'inscription avec l'API
-      print('Nom: ${_nameController.text}');
-      print('Email: ${_emailController.text}');
-      print('Ville: $_selectedCity');
-      print('Département: $_selectedDepartment');
+      setState(() => _isLoading = true);
+
+      try {
+        final response = await _authService.register(
+          email: _emailController.text,
+          password: _passwordController.text,
+          passwordConfirmation: _confirmPasswordController.text,
+          name: _nameController.text,
+          phone: _phoneController.text,
+          city: _selectedCity!,
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Inscription réussie !'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pushReplacementNamed(context, '/login');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erreur lors de l\'inscription: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 
@@ -103,6 +140,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               },
                             ),
                             const SizedBox(height: 16),
+                            CustomTextField(
+                              controller: _phoneController,
+                              label: 'Numéro de téléphone',
+                              hintText: 'Entrer votre numéro de téléphone',
+                              keyboardType: TextInputType.phone,
+                              validator: (value) {
+                                if (value?.isEmpty ?? true) {
+                                  return 'Veuillez entrer votre numéro de téléphone';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
                             CitySelector(
                               onCitySelected: (city, department) {
                                 setState(() {
@@ -154,7 +204,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             const SizedBox(height: 24),
                             // Bouton d'inscription
                             ElevatedButton(
-                              onPressed: _handleRegistration,
+                              onPressed: _isLoading ? null : _handleRegistration,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primaryColor,
                                 foregroundColor: Colors.white,
@@ -163,13 +213,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: const Text(
-                                'S\'inscrire',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              child: _isLoading
+                                  ? const CircularProgressIndicator(color: Colors.white)
+                                  : const Text(
+                                      'S\'inscrire',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                             ),
                             const SizedBox(height: 16),
                             // Lien vers la connexion

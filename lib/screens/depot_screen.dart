@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'scan_qr_screen.dart';
 
 class DepotScreen extends StatefulWidget {
   const DepotScreen({Key? key}) : super(key: key);
@@ -15,6 +16,8 @@ class _DepotScreenState extends State<DepotScreen> {
   final MapController _mapController = MapController();
   LatLng _currentPosition = LatLng(6.3702, 2.3912); // Cotonou par défaut
   bool _isLoading = true;
+  List<LatLng> _polylinePoints = [];
+  Map<String, dynamic>? _selectedDepot;
 
   // Liste des dépôts (vous pourriez charger ces données depuis une API)
   final List<Map<String, dynamic>> _depots = [
@@ -32,13 +35,13 @@ class _DepotScreenState extends State<DepotScreen> {
     },
     {
       'id': 'depot3',
-      'name': 'Université d\'Abomey-Calavi',
-      'distance': '2.5 km',
+      'name': "Université d'Abomey-Calavi",
+      'distance': '500 m',
       'position': LatLng(6.4185, 2.3430),
     },
     {
       'id': 'depot4',
-      'name': 'Stade de l\'Amitié',
+      'name': "Stade de l'Amitié",
       'distance': '1.8 km',
       'position': LatLng(6.3639, 2.4294),
     },
@@ -107,128 +110,169 @@ class _DepotScreenState extends State<DepotScreen> {
     _mapController.move(position, 16);
   }
 
+  // Tracer une ligne directe entre la position actuelle et le dépôt
+  void _getDirections(LatLng destination) {
+    setState(() {
+      _polylinePoints = [_currentPosition, destination];
+      _selectedDepot = _depots.firstWhere(
+        (depot) => depot['position'] == destination,
+        orElse: () => _depots.first,
+      );
+    });
+    
+    // Ajuster la vue de la carte pour montrer tout l'itinéraire
+    _fitBounds();
+  }
+
+  // Ajuster la vue de la carte pour montrer tout l'itinéraire
+  void _fitBounds() {
+    if (_polylinePoints.isEmpty) return;
+
+    double minLat = _polylinePoints[0].latitude;
+    double maxLat = _polylinePoints[0].latitude;
+    double minLng = _polylinePoints[0].longitude;
+    double maxLng = _polylinePoints[0].longitude;
+
+    for (var point in _polylinePoints) {
+      if (point.latitude < minLat) minLat = point.latitude;
+      if (point.latitude > maxLat) maxLat = point.latitude;
+      if (point.longitude < minLng) minLng = point.longitude;
+      if (point.longitude > maxLng) maxLng = point.longitude;
+    }
+
+    // Ajouter une marge pour que les points ne soient pas trop près des bords
+    final latPadding = (maxLat - minLat) * 0.2;
+    final lngPadding = (maxLng - minLng) * 0.2;
+
+    _mapController.fitBounds(
+      LatLngBounds(
+        LatLng(minLat - latPadding, minLng - lngPadding),
+        LatLng(maxLat + latPadding, maxLng + lngPadding),
+      ),
+      options: const FitBoundsOptions(padding: EdgeInsets.all(50.0)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFECF5EC),
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // En-tête "Trouver un dépôt"
-                Row(
+      backgroundColor: const Color(0xFFECF5EC),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Trouver un dépôt',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        titleTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.my_location, color: Colors.orange),
+            onPressed: _getCurrentLocation,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          padding: const EdgeInsets.all(0),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Onglets Carte/Liste
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const CircleAvatar(
-                        backgroundColor: Colors.black,
-                        radius: 12,
-                        child: Icon(Icons.arrow_back, color: Colors.white, size: 16),
+                    // Onglet Carte
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showMap = true;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: _showMap ? Colors.orange : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Text(
+                            'Carte',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Trouver un dépôt',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: _getCurrentLocation,
-                      child: const CircleAvatar(
-                        backgroundColor: Colors.orange,
-                        radius: 15,
-                        child: Icon(Icons.my_location, color: Colors.white, size: 16),
+                    // Onglet Liste
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showMap = false;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: !_showMap ? Colors.orange : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Text(
+                            'Liste',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
-                
-                const SizedBox(height: 16),
-                
-                // Onglets Carte/Liste
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Row(
-                    children: [
-                      // Onglet Carte
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _showMap = true;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: _showMap ? Colors.orange : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: const Text(
-                              'Carte',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Onglet Liste
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _showMap = false;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: !_showMap ? Colors.orange : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: const Text(
-                              'Liste',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Contenu (Carte ou Liste)
-                Expanded(
-                  child: _showMap ? _buildMap() : _buildList(),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16),
+              // Contenu (Carte ou Liste)
+              Expanded(
+                child: _showMap ? _buildMap() : _buildList(),
+              ),
+            ],
           ),
         ),
       ),
+      floatingActionButton: _polylinePoints.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ScanQrScreen()),
+                );
+              },
+              backgroundColor: Colors.orange,
+              icon: const Icon(Icons.qr_code_scanner),
+              label: const Text('Scanner le QR Code'),
+            )
+          : null,
     );
   }
 
@@ -247,13 +291,23 @@ class _DepotScreenState extends State<DepotScreen> {
           initialZoom: 14,
         ),
         children: [
-          // Tuiles de la carte (OpenStreetMap)
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             userAgentPackageName: 'com.example.bemi_app',
           ),
           
-          // Marqueurs
+          // Polylines pour l'itinéraire
+          PolylineLayer(
+            polylines: [
+              if (_polylinePoints.isNotEmpty)
+                Polyline(
+                  points: _polylinePoints,
+                  color: Colors.blue,
+                  strokeWidth: 4.0,
+                ),
+            ],
+          ),
+          
           MarkerLayer(
             markers: [
               // Marqueur pour la position actuelle
@@ -286,7 +340,9 @@ class _DepotScreenState extends State<DepotScreen> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.8),
+                      color: _selectedDepot?['id'] == depot['id'] 
+                          ? Colors.orange 
+                          : Colors.green.withOpacity(0.8),
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2),
                     ),
@@ -307,6 +363,10 @@ class _DepotScreenState extends State<DepotScreen> {
 
   // Afficher les détails du dépôt sélectionné
   void _showDepotDetails(Map<String, dynamic> depot) {
+    setState(() {
+      _selectedDepot = depot;
+    });
+    
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -325,17 +385,51 @@ class _DepotScreenState extends State<DepotScreen> {
             const SizedBox(height: 8),
             Text('Distance: ${depot["distance"]}'),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Fermer la bottom sheet
-                // Vous pourriez ajouter une navigation vers un écran de directions
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                minimumSize: const Size(double.infinity, 40),
-              ),
-              child: const Text('Obtenir des directions'),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _getDirections(depot['position']);
+                    },
+                    icon: const Icon(Icons.directions),
+                    label: const Text('Obtenir des directions'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            if (_polylinePoints.contains(depot['position']))
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ScanQrScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.qr_code_scanner),
+                        label: const Text('Scanner le QR Code'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2F9359),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

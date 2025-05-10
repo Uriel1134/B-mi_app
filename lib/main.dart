@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_colors.dart';
 import 'providers/offer_provider.dart';
+import 'providers/user_provider.dart';
 import 'config/routes/app_routes.dart';
 import 'services/token_service.dart';
 
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => OfferProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp(
         title: 'Bèmi',
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           scaffoldBackgroundColor: AppColors.backgroundColor,
         ),
-        initialRoute: isLoggedIn ? AppRoutes.home : AppRoutes.login,
+        initialRoute: AppRoutes.splash,
         routes: AppRoutes.routes,
         onGenerateRoute: AppRoutes.generateRoute,
         onUnknownRoute: AppRoutes.unknownRoute,

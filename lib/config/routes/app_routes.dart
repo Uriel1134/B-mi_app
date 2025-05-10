@@ -13,7 +13,7 @@ import '../../screens/offer_list_screen.dart';
 import '../../screens/scan_qr_screen.dart';
 import '../../screens/profile_screen.dart';
 import '../../services/token_service.dart';
-
+import '../../screens/scan_qr_screen_copy.dart';
 
 class AppRoutes {
   // Définition des noms de routes
@@ -27,26 +27,26 @@ class AppRoutes {
   static const String categorisation = '/categorisation';
   static const String depots = '/depots';
   static const String scanQR = '/scan-qr';
+  static const String scanQRCopy = '/scan-qr-copy';
   static const String offres = '/offres';
   static const String profile = '/profile';
-  
 
   // Map de toutes les routes disponibles
   static Map<String, WidgetBuilder> get routes => {
-    splash: (context) => const SplashScreen(),
-    onboarding: (context) => const OnboardingScreen(),
-    login: (context) => const LoginScreen(),
-    register: (context) => const RegisterScreen(),
-    home: (context) => const HomeScreen(),
-    collecte: (context) => const CollecteScreen(),
-    photoCapture: (context) => const PhotoCaptureScreen(),
-    categorisation: (context) => const CategorisationScreen(),
-    depots: (context) => const DepotScreen(),
-
-    offres: (context) => const OfferListScreen(),
-    scanQR: (context) => const ScanQrScreen(),
-    profile: (context) => const ProfileScreen(),
-  };
+        splash: (context) => const SplashScreen(),
+        onboarding: (context) => const OnboardingScreen(),
+        login: (context) => const LoginScreen(),
+        register: (context) => const RegisterScreen(),
+        home: (context) => const HomeScreen(),
+        collecte: (context) => const CollecteScreen(),
+        photoCapture: (context) => const PhotoCaptureScreen(),
+        categorisation: (context) => const CategorisationScreen(),
+        depots: (context) => const DepotScreen(),
+        offres: (context) => const OfferListScreen(),
+        scanQR: (context) => const ScanQrScreen(),
+        scanQRCopy: (context) => const ScanQrScreenCopy(),
+        profile: (context) => const ProfileScreen(),
+      };
 
   // Méthode pour générer des routes dynamiques (si nécessaire)
   static Route<dynamic> generateRoute(RouteSettings settings) {

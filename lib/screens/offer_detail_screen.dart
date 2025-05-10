@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../core/theme/app_colors.dart';
 import '../models/offer.dart';
+import '../config/routes/app_routes.dart';
 
 class OfferDetailScreen extends StatelessWidget {
   final Offer offer;
@@ -104,7 +105,7 @@ class OfferDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _buildSubscribeButton(),
+      bottomNavigationBar: _buildSubscribeButton(context),
     );
   }
 
@@ -121,8 +122,7 @@ class OfferDetailScreen extends StatelessWidget {
     return Center(
       child: TextButton.icon(
         onPressed: () {
-          final String shareText = 
-              'Découvrez cette super offre sur Bèmi !\n\n'
+          final String shareText = 'Découvrez cette super offre sur Bèmi !\n\n'
               '${offer.title} chez ${offer.partnerName}\n'
               '${offer.description}\n\n'
               'Téléchargez Bèmi pour en profiter !';
@@ -138,12 +138,12 @@ class OfferDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSubscribeButton() {
+  Widget _buildSubscribeButton(context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ElevatedButton(
         onPressed: () {
-          // TODO: Implémenter la souscription / utilisation de l'offre
+          Navigator.pushNamed(context, AppRoutes.scanQRCopy);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
@@ -160,4 +160,4 @@ class OfferDetailScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}

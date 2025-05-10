@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../core/theme/app_colors.dart';
+import 'photo_confirmation_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ScanQrScreen extends StatefulWidget {
   const ScanQrScreen({Key? key}) : super(key: key);
@@ -59,34 +61,68 @@ class _ScanQrScreenState extends State<ScanQrScreen> with WidgetsBindingObserver
   void _handleScanResult(String code) {
     if (!mounted) return;
     
+    // Vérifier si c'est la bonne poubelle (simulé)
+    // En réalité, cette vérification serait faite avec le backend
+    final bool isCorrectBin = code.contains("PET") || code.contains("plastique") || code.contains("plastic");
+    
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Code QR Scanné'),
-        content: Text(code),
+        title: Text(
+          isCorrectBin ? 'Bravo !' : 'Attention !',
+          style: TextStyle(
+            color: isCorrectBin ? const Color(0xFF2F9359) : Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isCorrectBin ? Icons.check_circle : Icons.error,
+              color: isCorrectBin ? const Color(0xFF2F9359) : Colors.red,
+              size: 60,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              isCorrectBin 
+                ? 'Vous avez scanné la bonne poubelle pour votre déchet plastique.'
+                : 'Cette poubelle ne correspond pas à votre type de déchet (plastique).',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              setState(() {
-                _isScanning = false;
-                scanResult = null;
-              });
-            },
-            child: const Text('OK'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              setState(() {
-                scanResult = null;
-                controller.start();
-                _isScanning = true;
-              });
-            },
-            child: const Text('Scanner à nouveau'),
-          ),
+          if (!isCorrectBin)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                setState(() {
+                  scanResult = null;
+                  controller.start();
+                  _isScanning = true;
+                });
+              },
+              child: const Text('Scanner à nouveau'),
+            ),
+          if (isCorrectBin)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // Naviguer vers la page de capture photo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PhotoConfirmationScreen(points: 750),
+                  ),
+                );
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF2F9359),
+              ),
+              child: const Text('Continuer'),
+            ),
         ],
       ),
     );
@@ -294,8 +330,42 @@ class _ScanQrScreenState extends State<ScanQrScreen> with WidgetsBindingObserver
             ),
           ),
         ),
+        Positioned(
+          bottom: 20,
+          right: 0,
+          left: 0,
+          child: Center(
+            child: ElevatedButton.icon(
+              onPressed: _pickImageFromGallery,
+              icon: const Icon(Icons.photo_library),
+              label: const Text('Uploader un QR code'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: AppColors.primaryColor,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                elevation: 5,
+              ),
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    
+    if (image != null && mounted) {
+      // Simuler un scan réussi
+      setState(() {
+        _isScanning = false;
+        controller.stop();
+      });
+      
+      // Utiliser un QR code fictif pour le plastique
+      _handleScanResult("PET-plastique-recyclable");
+    }
   }
 
   Widget _buildImageCard(String imagePath) {

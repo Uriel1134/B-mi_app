@@ -21,9 +21,7 @@ class _OfferListScreenState extends State<OfferListScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => 
-      context.read<OfferProvider>().loadOffers()
-    );
+    Future.microtask(() => context.read<OfferProvider>().loadOffers());
   }
 
   Future<void> _handleLocationPermission() async {
@@ -41,11 +39,15 @@ class _OfferListScreenState extends State<OfferListScreen> {
       if (!mounted) return;
       if (!serviceEnabled) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Les services de localisation sont désactivés. Ouverture des paramètres...')),
+          const SnackBar(
+              content: Text(
+                  'Les services de localisation sont désactivés. Ouverture des paramètres...')),
         );
         await Geolocator.openLocationSettings();
-        
-        setState(() { _isRequestingLocation = false; });
+
+        setState(() {
+          _isRequestingLocation = false;
+        });
         return;
       }
 
@@ -55,19 +57,26 @@ class _OfferListScreenState extends State<OfferListScreen> {
         permission = await Geolocator.requestPermission();
         if (!mounted) return;
         if (permission == LocationPermission.denied) {
-           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Permission de localisation refusée.')),
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Permission de localisation refusée.')),
           );
-          setState(() { _isRequestingLocation = false; });
+          setState(() {
+            _isRequestingLocation = false;
+          });
           return;
         }
       }
-      
+
       if (permission == LocationPermission.deniedForever) {
-         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Permission de localisation refusée définitivement. Veuillez l\'activer dans les paramètres.')),
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Permission de localisation refusée définitivement. Veuillez l\'activer dans les paramètres.')),
         );
-         setState(() { _isRequestingLocation = false; });
+        setState(() {
+          _isRequestingLocation = false;
+        });
         return;
       }
 
@@ -75,7 +84,6 @@ class _OfferListScreenState extends State<OfferListScreen> {
         _isLocationActive = true;
         _isRequestingLocation = false;
       });
-
     } catch (e) {
       print("Erreur lors de la demande de localisation: $e");
       if (mounted) {
@@ -102,7 +110,8 @@ class _OfferListScreenState extends State<OfferListScreen> {
         ),
         title: const Text(
           'Offre',
-          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: AppColors.textColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: ClipRRect(
@@ -116,6 +125,8 @@ class _OfferListScreenState extends State<OfferListScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               _buildSearchBar(),
+              const SizedBox(height: 16),
+              _buildCategorySelector(),
               const SizedBox(height: 16),
               _buildLocationBanner(),
               const SizedBox(height: 24),
@@ -146,6 +157,80 @@ class _OfferListScreenState extends State<OfferListScreen> {
     );
   }
 
+  Widget _buildCategorySelector() {
+    return Consumer<OfferProvider>(
+      builder: (context, provider, child) {
+        // Si les catégories ne sont pas encore chargées, affiche un placeholder
+        if (provider.isLoading) {
+          return const SizedBox(
+            height: 50,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        final categories = provider.availableCategories;
+        final selectedCategory = provider.selectedCategory;
+
+        return Container(
+          height: 50,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              final isSelected = category == selectedCategory;
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: GestureDetector(
+                  onTap: () {
+                    provider.setSelectedCategory(category);
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primaryColor : Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColor.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: AppColors.primaryColor.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Center(
+                      child: Text(
+                        category,
+                        style: TextStyle(
+                          color:
+                              isSelected ? Colors.white : AppColors.textColor,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildLocationBanner() {
     return Visibility(
       visible: !_isLocationActive,
@@ -158,7 +243,8 @@ class _OfferListScreenState extends State<OfferListScreen> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.location_on_outlined, color: AppColors.primaryColor),
+            const Icon(Icons.location_on_outlined,
+                color: AppColors.primaryColor),
             const SizedBox(width: 12),
             const Expanded(
               child: Text(
@@ -168,7 +254,8 @@ class _OfferListScreenState extends State<OfferListScreen> {
             ),
             const SizedBox(width: 12),
             ElevatedButton(
-              onPressed: _isRequestingLocation ? null : _handleLocationPermission,
+              onPressed:
+                  _isRequestingLocation ? null : _handleLocationPermission,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accentColor,
                 foregroundColor: Colors.white,
@@ -176,8 +263,12 @@ class _OfferListScreenState extends State<OfferListScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: _isRequestingLocation 
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              child: _isRequestingLocation
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2))
                   : const Text('Activer'),
             ),
           ],
@@ -187,13 +278,22 @@ class _OfferListScreenState extends State<OfferListScreen> {
   }
 
   Widget _buildOfferSectionTitle() {
-    return const Text(
-      'Voici une sélection d\'offres de partenaires Bèmi',
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textColor,
-      ),
+    return Consumer<OfferProvider>(
+      builder: (context, provider, child) {
+        String selectedCategory = provider.selectedCategory;
+        String categoryText = selectedCategory == 'Toutes'
+            ? 'Voici une sélection d\'offres de partenaires Bèmi'
+            : 'Offres ${selectedCategory.toLowerCase()} de nos partenaires Bèmi';
+
+        return Text(
+          categoryText,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textColor,
+          ),
+        );
+      },
     );
   }
 
@@ -224,12 +324,23 @@ class _OfferListScreenState extends State<OfferListScreen> {
           );
         }
 
-        final offers = offerProvider.offers;
-        if (offers.isEmpty) {
-          return const Center(
+        final allOffers = offerProvider.offers;
+        final selectedCategory = offerProvider.selectedCategory;
+
+        // Filtrer les offres selon la catégorie sélectionnée
+        final filteredOffers = selectedCategory == 'Toutes'
+            ? allOffers
+            : allOffers
+                .where((offer) => offer.category == selectedCategory)
+                .toList();
+
+        if (filteredOffers.isEmpty) {
+          return Center(
             child: Text(
-              'Aucune offre disponible pour le moment',
-              style: TextStyle(color: AppColors.textColor),
+              selectedCategory == 'Toutes'
+                  ? 'Aucune offre disponible pour le moment'
+                  : 'Aucune offre ${selectedCategory.toLowerCase()} disponible pour le moment',
+              style: const TextStyle(color: AppColors.textColor),
             ),
           );
         }
@@ -237,9 +348,9 @@ class _OfferListScreenState extends State<OfferListScreen> {
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: offers.length,
+          itemCount: filteredOffers.length,
           itemBuilder: (context, index) {
-            final offer = offers[index];
+            final offer = filteredOffers[index];
             return OfferCard(
               offer: offer,
               onTap: () {
@@ -256,4 +367,4 @@ class _OfferListScreenState extends State<OfferListScreen> {
       },
     );
   }
-} 
+}

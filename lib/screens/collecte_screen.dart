@@ -4,13 +4,8 @@ import 'categorisation_screen.dart';
 import '../core/theme/app_colors.dart';
 
 class CollecteScreen extends StatelessWidget {
-  const CollecteScreen({Key? key}) : super(key: key);
-
-  @override
+  const CollecteScreen({Key? key}) : super(key: key);  @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-    final bool isSmallScreen = screenSize.width < 600;
-
     return Scaffold(
       backgroundColor: const Color(0xFFECF5EC),
       appBar: AppBar(

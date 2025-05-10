@@ -5,7 +5,6 @@ import '../config/routes/app_routes.dart';
 import '../core/theme/app_colors.dart';
 import '../services/auth_service.dart';
 import '../providers/user_provider.dart';
-import 'photo_capture_screen.dart'; // Import de l'écran de capture photo
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
